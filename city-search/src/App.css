@@ -4,3 +4,10 @@
   color: white;
   text-align: center;
 }
+
+.info{
+  border: 2px solid gray;
+  text-align: center;
+  padding: 0;
+  margin: 40px auto;
+}

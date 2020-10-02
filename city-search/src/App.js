@@ -3,7 +3,7 @@ import React,{Component} from 'react';
 import './App.css';
 
 function DisplayZip(props){
-  return <div>{props.display()}</div>
+  return <div >{props.display()}</div>
 }
 
 function CitySearchField(props){
@@ -28,32 +28,43 @@ class App extends Component {
     userInputValue: "",
     zipCodes:[],
     stateNames:[],
-    // stateName: "",
-    // lat: "",
-    // long: "",
-    // population: "",
-    // totalWages: "",
-    //  cityArray: [],
+    //stateName: "",
+    lat: [],
+    long: [],
+    population: [],
+    totalWages: [],
+    cityArray: [],
+    stateInfo:[],
+    commonNames:[],
   };
 
 
   display(event) {
-    // console.log("IN DISPLAY");
+
     let card = []
+
 
 
     if (this.state.zipCodes.length >= 1) {
       for (let i = 0; i < this.state.zipCodes.length; i++) {
-       
+        
+  
 
         card.push(
-          <div key={this.state.zipCodes[i]}>
+          <div class="info" key={this.state.zipCodes[i]}>
             <p>ZipCode: {this.state.zipCodes[i]} State: {this.state.stateNames[i]} </p>
-          </div>)
+            <p>Location: {this.state.lat[i]}, {this.state.long[i]}</p>
+            <p>Population: {this.state.population[i]}</p>
+            <p>Total Wages: {this.state.totalWages[i]}</p>
+            <p>Common Names: {this.state.commonNames[i]}</p>
+            <br></br>
+          </div>
+            )
+          
       }
     }
     else if(this.state.userInputValue===""){
-      card.push(<div>No Results</div>)
+      card.push(<div key="Empty">No Results</div>)
     }
 
     return card;
@@ -63,7 +74,17 @@ class App extends Component {
 
     if(event.target.value.length===0){
       this.setState({
-        userInputValue: ""
+        userInputValue: "",
+         zipCodes: [],
+        stateNames: [],
+        //stateName: "",
+        lat: [],
+        long: [],
+        population: [],
+        totalWages: [],
+        cityArray: [],
+        stateInfo: [],
+        commonNames: [],
       })
     }else{
     this.setState({
@@ -75,49 +96,72 @@ class App extends Component {
       .then(response => response.json())
       .then(jsonData => {
 
-        // console.log(jsonData)
-
-        // for Loop loads multiple city names
+       
+        
         let list = [];
-        // let cityNamePerZip=[];
         let stateList=[];
-        // console.log(jsonData.length);
+        let population =[];
+        let lat=[];
+        let long= [];
+        let totalWages= [];
+        let commonNames=[];
+         console.log(jsonData.length+"CHECKING LENGTH");
        
           for (let i = 0; i < jsonData.length; i++) {
-            // console.log(jsonData[i].City);
+            console.log(jsonData[i]+"CHECK DATA BEFORE PUSH");
 
             list.push(jsonData[i]);
+            
 
             fetch("https://ctp-zip-api.herokuapp.com/zip/"+jsonData[i])
             .then(response => response.json())
             .then(jsonData => {
 
-              // for (let i = 0; i < jsonData.length; i++) {
-              //   // console.log(jsonData[i].City);
-              //   cityNamePerZip.push(jsonData[i].City);
-              //   console.log(jsonData[i].City+"Hello")
-              // }
-              // list.push(cityNamePerZip);
+              let cityNames = [];
+              for (let i = 0; i < jsonData.length; i++) {
+                cityNames.push(jsonData[i].City+", ");
+                
+              }
+              console.log(cityNames);
+              commonNames.push(cityNames);
+              stateList.push(jsonData[0].State);
+              population.push(jsonData[0].EstimatedPopulation);
+              lat.push(jsonData[0].Lat);
+              long.push(jsonData[0].Long);
+              totalWages.push(jsonData[0].TotalWages);
 
-              stateList.push(jsonData[0].State)
+              
+
+            
+
                 this.setState({
-                    stateNames: stateList,
-                    // cityArray: list,
+
+                  lat: lat,
+                  long: long,
+                  population: population,
+                  totalWages: totalWages,
+                  stateNames: stateList,
+                  commonNames: commonNames,
+                  
 
                 })
             }).catch(error => console.log(error));
-            // console.log("Hello from the loop")
           }
-          // console.log("from the else");
+       
           this.setState({
             zipCodes: list,
           });
 
-        // console.log(this.state.zipCodes);
+        
+        
       }).catch(error => console.log(error));
+
+      
 
   };
 
+   
+    
   render() {
     return (
       <div className="App">
